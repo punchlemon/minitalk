@@ -20,8 +20,8 @@ int	ft_iswhitespace(char c)
 
 int	ft_atoi(const char *str)
 {
-	int		sign;
-	long	num;
+	int	sign;
+	int	num;
 
 	sign = 1;
 	while (ft_iswhitespace(*str))
@@ -35,13 +35,13 @@ int	ft_atoi(const char *str)
 	while (ft_isdigit(*str))
 	{
 		if (sign == 1
-			&& (num > LONG_MAX / 10 || (num == LONG_MAX / 10 && *str >= '7')))
-			return ((int)LONG_MAX);
+			&& (num > INT_MAX / 10 || (num == INT_MAX / 10 && *str >= '7')))
+			return (INT_MAX);
 		if (sign == -1
-			&& (num > LONG_MAX / 10 || (num == LONG_MAX / 10 && *str >= '8')))
-			return ((int)LONG_MIN);
+			&& (num > INT_MAX / 10 || (num == INT_MAX / 10 && *str >= '8')))
+			return (INT_MIN);
 		num = num * 10 + *str - '0';
 		str++;
 	}
-	return ((int)num * sign);
+	return (num * sign);
 }

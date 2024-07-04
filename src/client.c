@@ -13,7 +13,22 @@
 #include "minitalk.h"
 #include "libft.h"
 
-void	send_bits(int pid, char c)
+int	ft_str_isnumeric(char *str)
+{
+	if (str == NULL)
+		return (-2);
+	if (*str == '\0')
+		return (-1);
+	while (*str)
+	{
+		if (*str < '0' || *str > '9')
+			return (0);
+		str++;
+	}
+	return (1);
+}
+
+void	send_bits(int s_pid, char c)
 {
 	int	bit;
 
@@ -21,24 +36,39 @@ void	send_bits(int pid, char c)
 	while (++bit < 8)
 	{
 		if (c & (1 << bit))
-			kill(pid, SIGUSR1);
+		{
+			if (kill(s_pid, SIGUSR1) == -1)
+			{
+				write(2, "Sending message is failure.\n", 28);
+				exit(EXIT_FAILURE);
+			}
+		}
 		else
-			kill(pid, SIGUSR2);
+		{
+			if (kill(s_pid, SIGUSR2) == -1)
+			{
+				write(2, "Sending message is failure.\n", 28);
+				exit(EXIT_FAILURE);
+			}
+		}
 		usleep(100);
 	}
 }
 
 int	main(int argc, char **argv)
 {
-	int	pid;
+	int	s_pid;
 	int	i;
 
-	if (argc != 3)
-		return (write(1, "Wrong format.\n", 14), 0);
-	pid = ft_atoi(argv[1]);
+	if (argc != 3 || ft_str_isnumeric(argv[1]) != 1)
+	{
+		write(1, "Wrong format.\n", 14);
+		exit(EXIT_FAILURE);
+	}
+	s_pid = ft_atoi(argv[1]);
 	i = -1;
 	while (argv[2][++i] != '\0')
-		send_bits(pid, argv[2][i]);
-	send_bits(pid, '\n');
+		send_bits(s_pid, argv[2][i]);
+	send_bits(s_pid, '\n');
 	return (0);
 }

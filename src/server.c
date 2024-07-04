@@ -13,11 +13,13 @@
 #include "minitalk.h"
 #include "ft_printf.h"
 
-void	get_signal(int sig)
+void	get_signal(int sig, siginfo_t *info, void *context)
 {
 	static int	bit;
 	static char	c;
 
+	(void)context;
+	(void)info;
 	if (sig == SIGUSR1)
 		c |= (1 << bit);
 	bit++;
@@ -31,15 +33,21 @@ void	get_signal(int sig)
 
 int	main(void)
 {
-	int	pid;
+	int					pid;
+	struct sigaction	sa;
+	sigset_t			block_mask;
 
+	sigemptyset(&block_mask);
+	sigaddset(&block_mask, SIGINT);
+	sigaddset(&block_mask, SIGQUIT);
 	pid = getpid();
 	ft_printf("PID: %d\n", pid);
+	sa.sa_sigaction = &get_signal;
+	sa.sa_flags = SA_SIGINFO;
+	sa.sa_mask = block_mask;
+	sigaction(SIGUSR1, &sa, NULL);
+	sigaction(SIGUSR2, &sa, NULL);
 	while (1)
-	{
-		signal(SIGUSR1, get_signal);
-		signal(SIGUSR2, get_signal);
 		pause ();
-	}
 	return (0);
 }
