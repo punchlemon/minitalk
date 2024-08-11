@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "minitalk.h"
-// #include "ft_printf.h"
 
 void	get_signal(int sig, siginfo_t *info, void *context)
 {
