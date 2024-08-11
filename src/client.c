@@ -11,7 +11,6 @@
 /* ************************************************************************** */
 
 #include "minitalk.h"
-#include "libft.h"
 
 int	ft_str_isnumeric(char *str)
 {

@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 
 #include "minitalk.h"
-#include "ft_printf.h"
+// #include "ft_printf.h"
 
 void	get_signal(int sig, siginfo_t *info, void *context)
 {
@@ -36,12 +36,16 @@ int	main(void)
 	int					pid;
 	struct sigaction	sa;
 	sigset_t			block_mask;
+	char				*num_str;
 
 	sigemptyset(&block_mask);
 	sigaddset(&block_mask, SIGINT);
 	sigaddset(&block_mask, SIGQUIT);
 	pid = getpid();
-	ft_printf("PID: %d\n", pid);
+	write(1, "PID: ", 5);
+	num_str = ft_itoa(pid);
+	write(1, "\n", 1);
+	free(num_str);
 	sa.sa_sigaction = &get_signal;
 	sa.sa_flags = SA_SIGINFO;
 	sa.sa_mask = block_mask;

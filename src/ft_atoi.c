@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "minitalk.h"
 
 int	ft_iswhitespace(char c)
 {
@@ -32,7 +32,7 @@ int	ft_atoi(const char *str)
 	if (*str == '+' || *str == '-')
 		str++;
 	num = 0;
-	while (ft_isdigit(*str))
+	while ('0' <= *str && *str <= '9')
 	{
 		if (sign == 1
 			&& (num > INT_MAX / 10 || (num == INT_MAX / 10 && *str >= '7')))

@@ -1,16 +1,26 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strlcpy.c                                       :+:      :+:    :+:   */
+/*   ft_strdup.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: retanaka <retanaka@student.42tokyo.jp>     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/04/17 15:48:52 by retanaka          #+#    #+#             */
-/*   Updated: 2024/04/23 08:49:29 by retanaka         ###   ########.fr       */
+/*   Created: 2024/04/18 15:42:53 by retanaka          #+#    #+#             */
+/*   Updated: 2024/04/23 07:43:02 by retanaka         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "minitalk.h"
+
+size_t	ft_strlen(const char *s)
+{
+	size_t		i;
+
+	i = -1;
+	while (*(s + ++i))
+		;
+	return (i);
+}
 
 size_t	ft_strlcpy(char *dst, const char *src, size_t dstsize)
 {
@@ -27,4 +37,16 @@ size_t	ft_strlcpy(char *dst, const char *src, size_t dstsize)
 	while (--dstsize)
 		*(char *)(dst + dstsize - 1) = *(char *)(src + dstsize - 1);
 	return (src_len);
+}
+
+char	*ft_strdup(const char *s1)
+{
+	int		len;
+	char	*p;
+
+	len = ft_strlen(s1) + 1;
+	p = (char *)malloc(len * sizeof(char));
+	if (p != NULL)
+		ft_strlcpy(p, s1, len);
+	return (p);
 }

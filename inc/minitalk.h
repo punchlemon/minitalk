@@ -15,5 +15,11 @@
 
 # include <signal.h>
 # include <stdlib.h>
+# include <limits.h>
+# include <unistd.h>
+
+int		ft_atoi(const char *str);
+char	*ft_itoa(int n);
+char	*ft_strdup(const char *s1);
 
 #endif
