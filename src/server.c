@@ -30,6 +30,12 @@ void	get_signal(int sig, siginfo_t *info, void *context)
 	}
 }
 
+void	handle_sigquit(int sig)
+{
+	(void)sig;
+	exit(0);
+}
+
 int	main(void)
 {
 	int					pid;
@@ -43,8 +49,10 @@ int	main(void)
 	pid = getpid();
 	write(1, "PID: ", 5);
 	num_str = ft_itoa(pid);
+	write(1, num_str, ft_strlen(num_str));
 	write(1, "\n", 1);
 	free(num_str);
+	sa.sa_handler = handle_sigquit;
 	sa.sa_sigaction = &get_signal;
 	sa.sa_flags = SA_SIGINFO;
 	sa.sa_mask = block_mask;

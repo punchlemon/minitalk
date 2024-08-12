@@ -1,20 +1,27 @@
 NAMECL		=	client
 NAMESV		=	server
-INC			=	inc
-IFLAGS		=	-Iinc
+LIB			=	ft
+LIB_DIR		=	lib
+INC_DIR		=	inc
 SRC_DIR		=	src
 OBJ_DIR		=	obj
 CC			=	gcc
-FLAGS		=	-Wall -Werror -Wextra
-RM			=	rm -f
 SRCCL_FILE	=	 \
 				client \
-				ft_atoi \
 
 SRCSV_FILE	=	 \
 				server \
-				ft_itoa \
-				ft_strdup \
+
+CFLAGS		=	-Wall -Werror -Wextra
+IFLAGS		=	-I$(INC_DIR) -I$(LIB_DIR)/$(INC_DIR)
+LFLAGS		=	-L$(LIB_DIR) -l$(LIB)
+VFLAGS		=	 \
+				--track-origins=yes \
+				--leak-check=full \
+				# --show-leak-kinds=all \
+				-s \
+
+LOGFILE		=	valgrind_result.log
 
 SRCCL 		= 	$(addprefix $(SRC_DIR)/, $(addsuffix .c, $(SRCCL_FILE)))
 OBJCL 		= 	$(addprefix $(OBJ_DIR)/, $(addsuffix .o, $(SRCCL_FILE)))
@@ -24,29 +31,44 @@ OBJSV 		= 	$(addprefix $(OBJ_DIR)/, $(addsuffix .o, $(SRCSV_FILE)))
 
 OBJ_EXIST	=	.obj
 
-all:	$(NAMECL) $(NAMESV)
-
-$(NAMECL):	$(OBJCL) $(OBJ_EXIST)
-			@$(CC) $(FLAGS) $(OBJCL) $(IFLAGS) -o $(NAMECL)
-
-$(NAMESV):	$(OBJSV) $(OBJ_EXIST)
-			@$(CC) $(FLAGS) $(OBJSV) $(IFLAGS) -o $(NAMESV)
-
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c $(OBJ_EXIST)
-			@$(CC) $(FLAGS) $(IFLAGS) -c $< -o $@
+$(OBJ_DIR)/%.o:	$(SRC_DIR)/%.c | $(OBJ_EXIST)
+				@$(CC) $(CFLAGS) $(IFLAGS) -c $< -o $@
 
 $(OBJ_EXIST):
-			@mkdir -p $(OBJ_DIR)
+				@mkdir -p $(OBJ_DIR)
 
-clean:
-			@$(RM) -r $(OBJ_DIR)
+all:			$(NAMECL) $(NAMESV)
 
-fclean:		clean
-			@$(RM) $(NAMECL) $(NAMESV)
+$(NAMECL):		$(OBJCL)
+				@make all --no-print-directory -C $(LIB_DIR)
+				@$(CC) $(OBJCL) $(LFLAGS) -o $(NAMECL)
 
-re:			fclean all
+$(NAMESV):		$(OBJSV)
+				@$(CC) $(OBJSV) $(LFLAGS) -o $(NAMESV)
+
+lib_clean:
+				@make clean --no-print-directory -C $(LIB_DIR)
+
+clean:			lib_clean
+				@$(RM) -r $(OBJ_DIR)
+
+fclean:			clean
+				@$(RM) $(NAMECL) $(NAMESV)
+				@$(RM) $(LOGFILE)
+
+re:				fclean all
 
 norm:
-			@norminette $(SRC) $(INC) | grep KO | wc -l
+				@$(call check_norminette, $(SRC_DIR))
+				@$(call check_norminette, $(INC_DIR))
+				@$(call check_norminette, $(LIB_DIR))
 
-.PHONY:		all clean fclean re norm
+define check_norminette
+				@if norminette $1 | grep -q Error!; then \
+					norminette $1 | grep Error! | sed -E 's/^[^\\]*\\([^\\]*)\\.*(.{7})/\1\2/'; \
+				else \
+					echo "$1: OK!"; \
+				fi
+endef
+
+.PHONY:			all clean fclean re norm
